@@ -1,0 +1,42 @@
+name: Run Automated Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # Если requirements.txt нет, установим основные зависимости
+        pip install pytest pytest-html requests selenium
+        
+    - name: Run tests with pytest
+      run: |
+        pytest tests/ -v --html=report.html --self-contained-html
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report-${{ matrix.python-version }}
+        path: report.html
+        retention-days: 30
