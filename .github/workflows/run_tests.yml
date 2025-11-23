@@ -1,4 +1,4 @@
-name: API Tests Only
+name: ReqRes API Tests
 
 on:
   push:
@@ -7,22 +7,22 @@ on:
     branches: [ main, master ]
 
 jobs:
-  api-test:
+  test:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Python
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
         
-    - name: Install dependencies
+    - name: Install packages
       run: |
         pip install pytest requests
         
-    - name: Run only API tests
+    - name: Test with pytest
       run: |
-        pytest -v -m api
+        pytest test_reqres.py -v
